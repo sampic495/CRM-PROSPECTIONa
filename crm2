@@ -1,0 +1,168 @@
+const form = document.getElementById("leadForm");
+const leadsList = document.getElementById("leadsList");
+
+let leads = JSON.parse(localStorage.getItem("leads")) || [];
+
+function saveLeads() {
+  localStorage.setItem("leads", JSON.stringify(leads));
+}
+
+function renderLeads() {
+  leadsList.innerHTML = "";
+
+  if (leads.length === 0) {
+    leadsList.innerHTML = "<p>Aucun lead pour le moment.</p>";
+    return;
+  }
+
+  leads.forEach((lead, index) => {
+    const card = document.createElement("div");
+    card.className = "lead-card";
+
+    card.innerHTML = `
+      <h3>${lead.name}</h3>
+      <p><strong>Entreprise :</strong> ${lead.company || "-"}</p>
+      <p><strong>Téléphone :</strong> ${lead.phone || "-"}</p>
+      <p><strong>Email :</strong> ${lead.email || "-"}</p>
+      <p><strong>Statut :</strong> ${lead.status}</p>
+      <p><strong>Notes :</strong> ${lead.notes || "-"}</p>
+      <div class="actions">
+        <button onclick="deleteLead(${index})">Supprimer</button>
+      </div>
+    `;
+
+    leadsList.appendChild(card);
+  });
+}
+
+function deleteLead(index) {
+  leads.splice(index, 1);
+  saveLeads();
+  renderLeads();
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const lead = {
+    name: document.getElementById("name").value,
+    company: document.getElementById("company").value,
+    phone: document.getElementById("phone").value,
+    email: document.getElementById("email").value,
+    status: document.getElementById("status").value,
+    notes: document.getElementById("notes").value,
+  };
+
+  leads.push(lead);
+  saveLeads();
+  renderLeads();
+  form.reset();
+});
+
+renderLeads();
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+h1, h2 {
+  margin-top: 0;
+}
+
+form {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+input, select, textarea, button {
+  padding: 10px;
+  font-size: 16px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.lead-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background: #fafafa;
+}
+
+.lead-card h3 {
+  margin: 0 0 8px;
+}
+
+.actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM Prospection</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>CRM Prospection</h1>
+
+    <form id="leadForm">
+      <input type="text" id="name" placeholder="Nom du lead" required />
+      <input type="text" id="company" placeholder="Entreprise" />
+      <input type="text" id="phone" placeholder="Téléphone" />
+      <input type="email" id="email" placeholder="Email" />
+      <select id="status">
+        <option value="Nouveau">Nouveau</option>
+        <option value="Contacté">Contacté</option>
+        <option value="Relance">Relance</option>
+        <option value="Gagné">Gagné</option>
+        <option value="Perdu">Perdu</option>
+      </select>
+      <textarea id="notes" placeholder="Notes"></textarea>
+      <button type="submit">Ajouter le lead</button>
+    </form>
+
+    <h2>Mes leads</h2>
+    <div id="leadsList"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+# CRM Prospection
+
+Petit CRM simple pour suivre des leads.
+
+## Fonctions
+- Ajouter un lead
+- Statut: Nouveau, Contacté, Relance, Gagné, Perdu
+- Notes
+- Téléphone
+- Email
+- Entreprise
+- Sauvegarde locale dans le navigateur
+
+## Utilisation
+Ouvre `index.html` dans ton navigateur.
+crm-prospection/
+├─ README.md
+├─ index.html
+├─ style.css
+└─ app.js
