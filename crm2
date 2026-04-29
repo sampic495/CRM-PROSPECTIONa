@@ -6,7 +6,25 @@ let leads = JSON.parse(localStorage.getItem("leads")) || [];
 function saveLeads() {
   localStorage.setItem("leads", JSON.stringify(leads));
 }
+function calculateScore(lead) {
+  let score = 0;
 
+  if (lead.phone) score += 20;
+  if (lead.email) score += 15;
+  if (lead.company) score += 15;
+  if (lead.status === "Contacté") score += 20;
+  if (lead.status === "Relance") score += 25;
+  if (lead.notes && lead.notes.length > 10) score += 15;
+
+  return Math.min(score, 100);
+}
+
+function getColor(score) {
+  if (score >= 75) return "#c8f7c5";
+  if (score >= 50) return "#fff3cd";
+  if (score >= 25) return "#ffe0b2";
+  return "#f8d7da";
+}
 function renderLeads() {
   leadsList.innerHTML = "";
 
@@ -18,13 +36,15 @@ function renderLeads() {
   leads.forEach((lead, index) => {
     const card = document.createElement("div");
     card.className = "lead-card";
-
+const score = calculateScore(lead);
+card.style.background = getColor(score);
     card.innerHTML = `
       <h3>${lead.name}</h3>
       <p><strong>Entreprise :</strong> ${lead.company || "-"}</p>
       <p><strong>Téléphone :</strong> ${lead.phone || "-"}</p>
       <p><strong>Email :</strong> ${lead.email || "-"}</p>
       <p><strong>Statut :</strong> ${lead.status}</p>
+<p><strong>Score :</strong> ${score}/100</p>
       <p><strong>Notes :</strong> ${lead.notes || "-"}</p>
       <div class="actions">
         <button onclick="deleteLead(${index})">Supprimer</button>
